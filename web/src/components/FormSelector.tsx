@@ -15,7 +15,7 @@ export const FormSelector: React.FC<FormSelectorProps> = ({ onSelect, onBack }) 
         <h1 className="text-xl font-bold">Remplir un formulaire</h1>
       </header>
 
-      <main className="flex-1 p-4 max-w-2xl mx-auto w-full">
+      <main className="flex-1 p-3 sm:p-4 max-w-2xl mx-auto w-full">
         {blankForms.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-300 mb-6">
@@ -39,10 +39,10 @@ export const FormSelector: React.FC<FormSelectorProps> = ({ onSelect, onBack }) 
                       <div className="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                          <i className="fas fa-file-signature text-xl"></i>
                       </div>
-                      <div className="flex-1">
-                         <h3 className="font-bold text-gray-900 group-hover:text-primary transition-colors">{form.name}</h3>
-                         <p className="text-[10px] text-gray-400 mt-1 uppercase font-medium">Version: {form.version || '1'} • ID: {form.formId}</p>
-                      </div>
+                       <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-900 group-hover:text-primary transition-colors break-words">{form.name}</h3>
+                          <p className="text-[10px] text-gray-400 mt-1 uppercase font-medium truncate">Version: {form.version || '1'} • ID: {form.formId}</p>
+                       </div>
                       <i className="fas fa-chevron-right text-gray-200 group-hover:text-primary transition-colors"></i>
                    </div>
                 </div>

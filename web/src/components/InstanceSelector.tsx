@@ -68,7 +68,7 @@ export const InstanceSelector: React.FC<InstanceSelectorProps> = ({ config, onBa
         <h1 className="text-xl font-bold">Envoyer un formulaire</h1>
       </header>
 
-      <main className="flex-1 p-4 max-w-2xl mx-auto w-full">
+      <main className="flex-1 p-3 sm:p-4 max-w-2xl mx-auto w-full">
         {error && (
           <div className="bg-red-50 border border-red-100 p-4 rounded-2xl text-red-600 text-sm mb-4 flex items-center gap-3">
              <i className="fas fa-exclamation-circle"></i>
@@ -96,17 +96,17 @@ export const InstanceSelector: React.FC<InstanceSelectorProps> = ({ config, onBa
                  >
                     <div 
                       onClick={() => toggleSelect(ins.id)}
-                      className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors cursor-pointer ${selectedIds.has(ins.id) ? 'bg-primary border-primary text-white' : 'border-gray-200 bg-gray-50'}`}
+                      className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors cursor-pointer shrink-0 ${selectedIds.has(ins.id) ? 'bg-primary border-primary text-white' : 'border-gray-200 bg-gray-50'}`}
                     >
                        {selectedIds.has(ins.id) && <i className="fas fa-check text-[10px]"></i>}
                     </div>
-                    <div className="flex-1 cursor-pointer" onClick={() => toggleSelect(ins.id)}>
-                       <h3 className="font-bold text-gray-900 leading-tight">{ins.formName}</h3>
-                       <p className="text-[10px] text-gray-400 mt-1 uppercase font-medium">Finalisé le: {new Date(ins.timestamp || Date.now()).toLocaleString()}</p>
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggleSelect(ins.id)}>
+                       <h3 className="font-bold text-gray-900 leading-tight break-words">{ins.formName}</h3>
+                       <p className="text-[10px] text-gray-400 mt-1 uppercase font-medium truncate">Finalisé le: {new Date(ins.timestamp || Date.now()).toLocaleString()}</p>
                     </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); setPreviewingInstance(ins); }}
-                      className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary transition-colors"
+                      className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary transition-colors shrink-0"
                       title="Voir le contenu"
                     >
                        <i className="fas fa-eye"></i>

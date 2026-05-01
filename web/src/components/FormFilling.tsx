@@ -29,9 +29,20 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFinished, setIsFinished] = useState(false);
+  const [showExitWarning, setShowExitWarning] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   useEffect(() => {
     const parser = new DOMParser();
@@ -311,8 +322,18 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
 
   useEffect(() => {
     if (currentIndex < questions.length && !isCurrentVisible) {
-       // Skip non-relevant
-       setCurrentIndex(prev => prev + 1);
+        // Skip non-relevant
+        setCurrentIndex(prev => prev + 1);
+    }
+    
+    // Reset textarea height when question changes
+    if (textareaRef.current) {
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+          textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+      }, 50);
     }
   }, [currentIndex, isCurrentVisible, questions.length]);
 
@@ -389,6 +410,12 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
   const updateAnswer = (val: any) => {
     setError(null);
     setAnswers({ ...answers, [currentQuestion.id]: val });
+    
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
   };
 
   const toggleSelectMultiple = (val: string) => {
@@ -525,7 +552,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
     <div className="h-screen bg-white flex flex-col w-full animate-fade-in overflow-hidden">
       <header className="bg-white/90 backdrop-blur-xl border-b p-4 flex items-center justify-between sticky top-0 z-[1001] safe-area-top">
          <div className="flex items-center gap-3">
-            <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400">
+            <button onClick={() => setShowExitWarning(true)} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400">
                <i className="fas fa-times text-sm"></i>
             </button>
             <div className="leading-tight">
@@ -623,13 +650,15 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
                        className="w-full p-8 bg-gray-50 border-4 border-gray-50 rounded-[2.5rem] text-3xl font-black outline-none focus:bg-white focus:border-primary shadow-inner text-center"
                      />
                   ) : (
-                     <textarea 
-                       autoFocus
-                       value={answers[currentQuestion.id] || ''}
-                       onChange={(e) => updateAnswer(e.target.value)}
-                       className="w-full p-8 bg-gray-50 border-4 border-gray-50 rounded-[3rem] text-2xl font-bold outline-none focus:bg-white focus:border-primary transition-all min-h-[350px] text-gray-900 shadow-inner"
-                       placeholder="Tapez votre réponse ici..."
-                     />
+                      <textarea 
+                        ref={textareaRef}
+                        autoFocus
+                        rows={1}
+                        value={answers[currentQuestion.id] || ''}
+                        onChange={(e) => updateAnswer(e.target.value)}
+                        className="w-full p-8 bg-gray-50 border-4 border-gray-50 rounded-[2.5rem] text-2xl font-bold outline-none focus:bg-white focus:border-primary transition-all text-gray-900 shadow-inner resize-none overflow-hidden min-h-[90px]"
+                        placeholder="Tapez votre réponse ici..."
+                      />
                   )}
                </div>
             </div>
@@ -658,6 +687,38 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
          </button>
       </footer>
       
+      {showExitWarning && (
+        <div className="fixed inset-0 z-[5000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
+          <div className="bg-white w-full max-w-md rounded-[3rem] overflow-hidden shadow-2xl animate-slide-up">
+            <div className="bg-orange-500 p-10 text-white text-center space-y-4">
+              <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl">
+                <i className="fas fa-exclamation-triangle text-3xl"></i>
+              </div>
+              <h2 className="text-2xl font-black uppercase tracking-tighter">Attention !</h2>
+            </div>
+            <div className="p-10 text-center space-y-6">
+              <p className="text-gray-500 font-bold leading-relaxed">
+                Les données saisies seront définitivement perdues si vous quittez maintenant sans enregistrer.
+              </p>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => setShowExitWarning(false)}
+                  className="w-full bg-gray-100 text-gray-800 font-black py-4 rounded-2xl transition-all active:scale-95"
+                >
+                  RESTER ET CONTINUER
+                </button>
+                <button 
+                  onClick={onBack}
+                  className="w-full bg-red-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-red-200 transition-all active:scale-95"
+                >
+                  SORTIR ET TOUT PERDRE
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes pulse {
           0% { transform: scale(1); opacity: 0.8; }
