@@ -8,6 +8,15 @@ export interface ODKForm {
   hash?: string;
 }
 
+const getAuthToken = (config: ProjectConfig): string => {
+  if (!config.username || !config.password) return '';
+  const user = config.username.trim();
+  const pass = config.password.trim();
+  return btoa(encodeURIComponent(`${user}:${pass}`).replace(/%([0-9A-F]{2})/g, (_, p1) => {
+    return String.fromCharCode(parseInt(p1, 16));
+  }));
+};
+
 export const fetchFormList = async (config: ProjectConfig): Promise<ODKForm[]> => {
   let url = `${config.serverUrl}/formList`;
   
@@ -24,21 +33,17 @@ export const fetchFormList = async (config: ProjectConfig): Promise<ODKForm[]> =
     'X-OpenRosa-Version': '1.0',
   };
 
-  if (config.username && config.password) {
-    try {
-      // Tentative d'encodage standard
-      const auth = btoa(`${config.username}:${config.password}`);
-      headers['Authorization'] = `Basic ${auth}`;
-    } catch (e) {
-      // Fallback pour les caractères spéciaux si btoa échoue
-      const auth = btoa(unescape(encodeURIComponent(`${config.username}:${config.password}`)));
-      headers['Authorization'] = `Basic ${auth}`;
-    }
+  const authToken = getAuthToken(config);
+  if (authToken) {
+    headers['Authorization'] = `Basic ${authToken}`;
   }
 
-  console.log(`FETCH: Attempting to get forms from ${url} (Auth: ${config.username ? 'YES' : 'NO'})`);
+  console.log(`FETCH: Attempting to get forms from ${url} (Auth: ${authToken ? 'YES' : 'NO'})`);
+  if (authToken) {
+    console.log(`DEBUG: Auth Token Start: ${authToken.substring(0, 10)}...`);
+  }
   
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, { headers, credentials: 'omit' });
   
   if (response.status === 401) {
     throw new Error("Authentification échouée (401). Vérifiez votre nom d'utilisateur et mot de passe dans les paramètres.");
@@ -84,14 +89,12 @@ export const fetchFormXml = async (config: ProjectConfig, downloadUrl: string): 
     'X-OpenRosa-Version': '1.0',
   };
 
-  if (config.username && config.password) {
-    const auth = btoa(encodeURIComponent(`${config.username}:${config.password}`).replace(/%([0-9A-F]{2})/g, (match, p1) => {
-      return String.fromCharCode(parseInt(p1, 16));
-    }));
-    headers['Authorization'] = `Basic ${auth}`;
+  const authToken = getAuthToken(config);
+  if (authToken) {
+    headers['Authorization'] = `Basic ${authToken}`;
   }
 
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, { headers, credentials: 'omit' });
   
   if (response.status === 401) {
     throw new Error("Authentification échouée (401). Vérifiez votre nom d'utilisateur et mot de passe dans les paramètres.");
@@ -191,20 +194,16 @@ export const submitInstance = async (config: ProjectConfig, formId: string, form
     'X-OpenRosa-Version': '1.0',
   };
 
-  if (config.username && config.password) {
-    try {
-      const auth = btoa(`${config.username}:${config.password}`);
-      headers['Authorization'] = `Basic ${auth}`;
-    } catch (e) {
-      const auth = btoa(unescape(encodeURIComponent(`${config.username}:${config.password}`)));
-      headers['Authorization'] = `Basic ${auth}`;
-    }
+  const authToken = getAuthToken(config);
+  if (authToken) {
+    headers['Authorization'] = `Basic ${authToken}`;
   }
 
   const response = await fetch(url, {
     method: 'POST',
     headers,
-    body: formData
+    body: formData,
+    credentials: 'omit'
   });
 
   if (response.status === 401) {

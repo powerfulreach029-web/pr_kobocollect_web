@@ -35,16 +35,38 @@ export default defineConfig({
         target: 'https://kc.kobotoolbox.org',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/kobo-proxy/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('proxyRes', (proxyRes, _req, _res) => {
+            if (proxyRes.headers['www-authenticate']) {
+              console.log('PROXY: Stripping WWW-Authenticate from Kobo response');
+              delete proxyRes.headers['www-authenticate'];
+            }
+          });
+        },
       },
       '/kf-proxy': {
         target: 'https://kf.kobotoolbox.org',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/kf-proxy/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('proxyRes', (proxyRes, _req, _res) => {
+            if (proxyRes.headers['www-authenticate']) {
+              delete proxyRes.headers['www-authenticate'];
+            }
+          });
+        },
       },
       '/eu-proxy': {
         target: 'https://eu.kobotoolbox.org',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/eu-proxy/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('proxyRes', (proxyRes, _req, _res) => {
+            if (proxyRes.headers['www-authenticate']) {
+              delete proxyRes.headers['www-authenticate'];
+            }
+          });
+        },
       },
     },
   },
