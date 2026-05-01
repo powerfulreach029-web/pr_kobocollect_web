@@ -1,0 +1,23 @@
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = "web/dist"
+
+# Proxy vers KoboToolbox - remplace le proxy Vite de développement
+[[redirects]]
+  from = "/kobo-proxy/*"
+  to = "https://kc.kobotoolbox.org/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kf-proxy/*"
+  to = "https://kf.kobotoolbox.org/:splat"
+  status = 200
+  force = true
+
+# Fallback SPA - toutes les routes renvoient vers index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
