@@ -1,7 +1,11 @@
 [build]
   base = "web"
-  command = "npm run build"
-  publish = "web/dist"
+  command = "npm install && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"
 
 # Proxy vers KoboToolbox - remplace le proxy Vite de développement
 [[redirects]]
