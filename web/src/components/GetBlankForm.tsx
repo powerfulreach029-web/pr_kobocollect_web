@@ -21,7 +21,11 @@ export const GetBlankForm: React.FC<GetBlankFormProps> = ({ config, onBack, noti
         const list = await fetchFormList(config);
         setForms(list);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Une erreur est survenue");
+        const msg = err instanceof Error ? err.message : "Une erreur est survenue";
+        setError(msg);
+        if (msg.includes('401') || msg.includes('Authentification')) {
+          notify(msg, 'error');
+        }
       } finally {
         setLoading(false);
       }

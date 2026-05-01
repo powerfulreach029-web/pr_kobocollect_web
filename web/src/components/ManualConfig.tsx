@@ -8,7 +8,7 @@ interface ManualConfigProps {
 }
 
 export const ManualConfig: React.FC<ManualConfigProps> = ({ onSave, onCancel, initialConfig }) => {
-  const [url, setUrl] = useState(initialConfig?.serverUrl || 'https://kf.kobotoolbox.org');
+  const [url, setUrl] = useState(initialConfig?.serverUrl || 'https://kc.kobotoolbox.org');
   const [username, setUsername] = useState(initialConfig?.username || '');
   const [password, setPassword] = useState(initialConfig?.password || '');
   const [name, setName] = useState(initialConfig?.name || 'Nouveau Projet');
@@ -16,7 +16,7 @@ export const ManualConfig: React.FC<ManualConfigProps> = ({ onSave, onCancel, in
 
   React.useEffect(() => {
     if (initialConfig) {
-      setUrl(initialConfig.serverUrl || 'https://kf.kobotoolbox.org');
+      setUrl(initialConfig.serverUrl || 'https://kc.kobotoolbox.org');
       setUsername(initialConfig.username || '');
       setPassword(initialConfig.password || '');
       setName(initialConfig.name || 'Nouveau Projet');
@@ -63,9 +63,10 @@ export const ManualConfig: React.FC<ManualConfigProps> = ({ onSave, onCancel, in
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-primary/50 focus:bg-white transition-all outline-none text-gray-900"
-              placeholder="https://kf.kobotoolbox.org"
+              placeholder="https://kc.kobotoolbox.org"
               required
             />
+            <p className="text-[9px] text-gray-400 font-medium px-1">Conseil: Utilisez kc.kobotoolbox.org pour KoboToolbox.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [selectedForm, setSelectedForm] = useState<BlankForm | null>(null);
   const [editingInstance, setEditingInstance] = useState<FormInstance | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [showAuthError, setShowAuthError] = useState(false);
   const [counts, setCounts] = useState({ blanks: 0, drafts: 0, finalized: 0, sent: 0, total_saved: 0 });
 
   useEffect(() => {
@@ -35,6 +36,10 @@ const App: React.FC = () => {
   }, [view]);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    if (message.includes('401') || message.includes('Authentification échouée')) {
+      setShowAuthError(true);
+      return;
+    }
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
@@ -282,6 +287,38 @@ const App: React.FC = () => {
           <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[3000] px-6 py-4 rounded-2xl shadow-2xl animate-slide-up flex items-center gap-3 border-2 ${toast.type === 'success' ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-red-500 border-red-400 text-white'}`}>
              <i className={`fas ${toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} text-lg`}></i>
              <span className="font-black text-xs uppercase tracking-widest">{toast.message}</span>
+          </div>
+       )}
+
+       {showAuthError && (
+          <div className="fixed inset-0 z-[4000] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
+             <div className="bg-white w-full max-w-md rounded-[3rem] overflow-hidden shadow-2xl animate-slide-up">
+                <div className="bg-red-500 p-10 text-white text-center space-y-4">
+                   <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl">
+                      <i className="fas fa-lock text-3xl"></i>
+                   </div>
+                   <h2 className="text-2xl font-black uppercase tracking-tighter">Accès Refusé</h2>
+                </div>
+                <div className="p-10 text-center space-y-6">
+                   <p className="text-gray-500 font-bold leading-relaxed">
+                      Le serveur a refusé la connexion. Veuillez vérifier vos identifiants (nom d'utilisateur et mot de passe) dans les paramètres de l'application.
+                   </p>
+                   <div className="space-y-3">
+                      <button 
+                        onClick={() => { setShowAuthError(false); setView('settings'); }}
+                        className="w-full bg-primary text-white font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
+                      >
+                         ALLER AUX PARAMÈTRES
+                      </button>
+                      <button 
+                        onClick={() => setShowAuthError(false)}
+                        className="w-full text-gray-400 font-black py-2 text-[10px] uppercase tracking-widest"
+                      >
+                         Ignorer
+                      </button>
+                   </div>
+                </div>
+             </div>
           </div>
        )}
     </div>

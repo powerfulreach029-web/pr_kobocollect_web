@@ -41,6 +41,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/kf-proxy/, ''),
       },
+      '/eu-proxy': {
+        target: 'https://eu.kobotoolbox.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/eu-proxy/, ''),
+      },
     },
   },
 })

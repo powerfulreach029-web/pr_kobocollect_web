@@ -11,11 +11,13 @@ export interface ODKForm {
 export const fetchFormList = async (config: ProjectConfig): Promise<ODKForm[]> => {
   let url = `${config.serverUrl}/formList`;
   
-  // Contournement CORS pour le serveur Kobo officiel en mode développement
+  // Contournement CORS pour les serveurs Kobo
   if (url.includes('kc.kobotoolbox.org')) {
     url = url.replace('https://kc.kobotoolbox.org', '/kobo-proxy');
   } else if (url.includes('kf.kobotoolbox.org')) {
     url = url.replace('https://kf.kobotoolbox.org', '/kf-proxy');
+  } else if (url.includes('eu.kobotoolbox.org')) {
+    url = url.replace('https://eu.kobotoolbox.org', '/eu-proxy');
   }
   
   const headers: HeadersInit = {
@@ -23,14 +25,27 @@ export const fetchFormList = async (config: ProjectConfig): Promise<ODKForm[]> =
   };
 
   if (config.username && config.password) {
-    const auth = btoa(`${config.username}:${config.password}`);
-    headers['Authorization'] = `Basic ${auth}`;
+    try {
+      // Tentative d'encodage standard
+      const auth = btoa(`${config.username}:${config.password}`);
+      headers['Authorization'] = `Basic ${auth}`;
+    } catch (e) {
+      // Fallback pour les caractères spéciaux si btoa échoue
+      const auth = btoa(unescape(encodeURIComponent(`${config.username}:${config.password}`)));
+      headers['Authorization'] = `Basic ${auth}`;
+    }
   }
 
+  console.log(`FETCH: Attempting to get forms from ${url} (Auth: ${config.username ? 'YES' : 'NO'})`);
+  
   const response = await fetch(url, { headers });
   
+  if (response.status === 401) {
+    throw new Error("Authentification échouée (401). Vérifiez votre nom d'utilisateur et mot de passe dans les paramètres.");
+  }
+  
   if (!response.ok) {
-    throw new Error(`Erreur serveur: ${response.status}`);
+    throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
   }
 
   const xmlText = await response.text();
@@ -61,6 +76,8 @@ export const fetchFormXml = async (config: ProjectConfig, downloadUrl: string): 
     url = url.replace('https://kc.kobotoolbox.org', '/kobo-proxy');
   } else if (url.includes('kf.kobotoolbox.org')) {
     url = url.replace('https://kf.kobotoolbox.org', '/kf-proxy');
+  } else if (url.includes('eu.kobotoolbox.org')) {
+    url = url.replace('https://eu.kobotoolbox.org', '/eu-proxy');
   }
 
   const headers: HeadersInit = {
@@ -68,14 +85,20 @@ export const fetchFormXml = async (config: ProjectConfig, downloadUrl: string): 
   };
 
   if (config.username && config.password) {
-    const auth = btoa(`${config.username}:${config.password}`);
+    const auth = btoa(encodeURIComponent(`${config.username}:${config.password}`).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+      return String.fromCharCode(parseInt(p1, 16));
+    }));
     headers['Authorization'] = `Basic ${auth}`;
   }
 
   const response = await fetch(url, { headers });
   
+  if (response.status === 401) {
+    throw new Error("Authentification échouée (401). Vérifiez votre nom d'utilisateur et mot de passe dans les paramètres.");
+  }
+  
   if (!response.ok) {
-    throw new Error(`Erreur téléchargement: ${response.status}`);
+    throw new Error(`Erreur téléchargement: ${response.status} ${response.statusText}`);
   }
 
   return await response.text();
@@ -88,6 +111,8 @@ export const submitInstance = async (config: ProjectConfig, formId: string, form
     url = url.replace('https://kc.kobotoolbox.org', '/kobo-proxy');
   } else if (url.includes('kf.kobotoolbox.org')) {
     url = url.replace('https://kf.kobotoolbox.org', '/kf-proxy');
+  } else if (url.includes('eu.kobotoolbox.org')) {
+    url = url.replace('https://eu.kobotoolbox.org', '/eu-proxy');
   }
 
   // Generate XML properly using the original form template
@@ -167,8 +192,13 @@ export const submitInstance = async (config: ProjectConfig, formId: string, form
   };
 
   if (config.username && config.password) {
-    const auth = btoa(`${config.username}:${config.password}`);
-    headers['Authorization'] = `Basic ${auth}`;
+    try {
+      const auth = btoa(`${config.username}:${config.password}`);
+      headers['Authorization'] = `Basic ${auth}`;
+    } catch (e) {
+      const auth = btoa(unescape(encodeURIComponent(`${config.username}:${config.password}`)));
+      headers['Authorization'] = `Basic ${auth}`;
+    }
   }
 
   const response = await fetch(url, {
@@ -176,6 +206,10 @@ export const submitInstance = async (config: ProjectConfig, formId: string, form
     headers,
     body: formData
   });
+
+  if (response.status === 401) {
+    throw new Error("Authentification échouée (401). Vérifiez votre nom d'utilisateur et mot de passe dans les paramètres.");
+  }
 
   if (!response.ok) {
     const errText = await response.text();
