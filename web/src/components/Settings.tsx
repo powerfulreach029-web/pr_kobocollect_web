@@ -29,8 +29,8 @@ export const Settings: React.FC<SettingsProps> = ({ onBack, onSave, onAddProject
          </header>
          
          <main className="flex-1 p-8 flex flex-col items-center justify-center text-center space-y-8 max-w-lg mx-auto">
-            <div className="w-24 h-24 bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-primary/20 rotate-6">
-               <i className="fas fa-graduation-cap text-white text-5xl"></i>
+            <div className="w-32 h-32 flex items-center justify-center animate-pulse-slow">
+               <img src="https://i.ibb.co/QFp0NRy0/LOGO-Powerful-Reach-removebg-preview.png" alt="Powerful Reach Logo" className="w-full h-full object-contain" />
             </div>
             
             <div className="space-y-4">

@@ -196,8 +196,8 @@ const App: React.FC = () => {
         <header className="bg-white p-6 pb-6 rounded-b-[2.5rem] shadow-sm border-b border-gray-100 sticky top-0 z-50">
           <div className="flex items-center justify-between">
              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                   <i className="fas fa-graduation-cap text-white"></i>
+                <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-primary/20">
+                   <img src="https://i.ibb.co/ksh85hps/Chat-GPT-Image-1-mai-2026-19-06-37.png" alt="KoboCollect" className="w-full h-full object-cover" />
                 </div>
                 <div>
                    <h1 className="text-xl font-black text-gray-900 tracking-tighter">KoboCollect</h1>
@@ -295,8 +295,8 @@ const FirstLaunch: React.FC<{ onScanQR: () => void; onManual: () => void; onDemo
            <i className="fas fa-arrow-left"></i>
         </button>
      )}
-     <div className="mb-8 w-24 h-24 bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-primary/30 rotate-6">
-        <i className="fas fa-graduation-cap text-white text-5xl"></i>
+     <div className="mb-8 w-28 h-28 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/30">
+        <img src="https://i.ibb.co/ksh85hps/Chat-GPT-Image-1-mai-2026-19-06-37.png" alt="KoboCollect" className="w-full h-full object-cover" />
      </div>
      <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase">KoboCollect</h1>
      <p className="text-gray-400 mb-12 font-bold text-xs uppercase tracking-[0.3em]">Web Port Edition</p>
