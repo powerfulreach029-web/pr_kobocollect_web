@@ -107,7 +107,7 @@ export const fetchFormXml = async (config: ProjectConfig, downloadUrl: string): 
   return await response.text();
 };
 
-export const submitInstance = async (config: ProjectConfig, formId: string, formXml: string, instanceId: string, data: any): Promise<void> => {
+export const submitInstance = async (config: ProjectConfig, _formId: string, formXml: string, instanceId: string, data: any): Promise<void> => {
   let url = `${config.serverUrl}/submission`;
   
   if (url.includes('kc.kobotoolbox.org')) {

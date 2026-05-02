@@ -9,7 +9,7 @@ interface InstanceSelectorProps {
 }
 
 export const InstanceSelector: React.FC<InstanceSelectorProps> = ({ config, onBack, notify }) => {
-  const [instances, setInstances] = useState<any[]>(() => {
+  const [instances] = useState<any[]>(() => {
     return JSON.parse(localStorage.getItem('kobo_instances') || '[]').filter((ins: any) => ins.status === 'finalized');
   });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

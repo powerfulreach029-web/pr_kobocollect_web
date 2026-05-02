@@ -6,12 +6,18 @@ declare const L: any;
 
 interface Question {
   id: string;
-  type: 'text' | 'integer' | 'decimal' | 'select1' | 'select' | 'date' | 'geopoint' | 'note';
+  type: string;
   label: string;
   hint?: string;
   options?: { label: string; value: string }[];
   ref: string;
   required: boolean;
+  relevant?: string;
+  itemset?: {
+    nodeset: string;
+    labelRef: string;
+    valueRef: string;
+  };
 }
 
 interface FormFillingProps {
@@ -52,7 +58,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
     const getCleanTagName = (el: Element) => el.tagName.toLowerCase().split(':').pop();
 
     // 1. Parse Binds for types and constraints
-    const binds: Record<string, { type: string, required: boolean }> = {};
+    const binds: Record<string, { type: string, required: boolean, relevant?: string }> = {};
     const metadataPaths: Record<string, string> = {};
     const bindEls = doc.getElementsByTagNameNS("*", "bind");
     for (let i = 0; i < bindEls.length; i++) {
@@ -150,7 +156,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
         const el = children[i];
         const tagName = getCleanTagName(el);
         const ref = el.getAttribute('ref') || "";
-        const bindData = binds[ref] || {};
+        const bindData = binds[ref] || { type: '', required: false };
         
         // Combine current relevance with parent relevance
         const currentRelevant = bindData.relevant;
@@ -185,7 +191,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
           const required = bindData.required || el.getAttribute('required') === 'true()' || el.getAttribute('required') === 'true';
 
           const options: { label: string; value: string }[] = [];
-          let itemset = undefined;
+          let itemset: any = undefined;
 
           if (type === 'select1' || type === 'select') {
              // 1. Static items
@@ -264,6 +270,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
           { enableHighAccuracy: true, timeout: 15000 }
         );
       }, 300);
+      return () => clearTimeout(timeout);
     }
   }, [currentIndex, questions]);
 
@@ -290,7 +297,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
     }
 
     // 3. Handle functions like selected(field, 'value')
-    processed = processed.replace(/selected\(([^,]+),\s*['"]?([^'"]+)['"]?\)/g, (m, field, val) => {
+    processed = processed.replace(/selected\(([^,]+),\s*['"]?([^'"]+)['"]?\)/g, (_m, field, val) => {
       let fVal = field.trim();
       if (fVal.startsWith("'") && fVal.endsWith("'")) fVal = fVal.slice(1, -1);
       return fVal.split(/\s+/).includes(val) ? "true" : "false";
@@ -316,7 +323,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
   };
 
   const getVisibleQuestions = () => questions.filter(q => evaluateXPath(q.relevant || "", answers));
-  const visibleQuestions = getVisibleQuestions();
+  // const visibleQuestions = getVisibleQuestions();
   const currentQuestion = questions[currentIndex];
   const isCurrentVisible = evaluateXPath(currentQuestion?.relevant || "", answers);
 

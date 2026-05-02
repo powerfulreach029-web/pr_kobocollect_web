@@ -28,7 +28,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScan, onBack }) => {
           console.error("Invalid QR Code content", e);
         }
       },
-      (errorMessage) => {
+      (_errorMessage) => {
         // Just ignoring errors during scanning
       }
     );
