@@ -25,7 +25,7 @@ interface FormFillingProps {
   config: ProjectConfig;
   initialAnswers?: Record<string, any>;
   onBack: () => void;
-  onSave: (instance: any, status: 'draft' | 'finalized', labelMap: any) => void;
+  onSave: (instance: any, status: 'draft' | 'finalized', labelMap: any, stay?: boolean) => void;
 }
 
 export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialAnswers, onBack, onSave }) => {
@@ -441,7 +441,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
     </div>
   );
 
-  const handleFinalize = (status: 'draft' | 'finalized') => {
+  const handleFinalize = (status: 'draft' | 'finalized', stay: boolean = false) => {
     const finalAnswers = { ...answers };
     
     // Capture end time
@@ -484,7 +484,7 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
       labelMap[q.id] = { label: q.label, value: displayVal };
     });
     
-    onSave(finalAnswers, status, labelMap);
+    onSave(finalAnswers, status, labelMap, stay);
   };
 
    if (isFinished) {
@@ -567,12 +567,16 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
                <span className="text-[9px] font-black text-primary uppercase tracking-widest">Moteur v2.5 Premium</span>
             </div>
          </div>
-         <div className="flex-1 max-w-[100px] mx-4">
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-               <div className="h-full bg-primary transition-all duration-700 ease-out" style={{ width: `${progress}%` }}></div>
-            </div>
+         <div className="flex items-center gap-3">
+            <button 
+              onClick={() => handleFinalize('draft', true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all shadow-sm"
+              title="Enregistrer comme ébauche"
+            >
+               <i className="fas fa-save text-sm"></i>
+            </button>
+            <span className="text-[10px] font-black text-gray-400 tabular-nums">{currentIndex + 1}/{questions.length}</span>
          </div>
-         <span className="text-[10px] font-black text-gray-400 tabular-nums">{currentIndex + 1}/{questions.length}</span>
       </header>
 
       <main className="flex-1 px-6 py-8 flex flex-col max-w-2xl mx-auto w-full overflow-y-auto overflow-x-hidden">
@@ -715,10 +719,16 @@ export const FormFilling: React.FC<FormFillingProps> = ({ form, config, initialA
                   RESTER ET CONTINUER
                 </button>
                 <button 
-                  onClick={onBack}
-                  className="w-full bg-red-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-red-200 transition-all active:scale-95"
+                  onClick={() => handleFinalize('draft')}
+                  className="w-full bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-95"
                 >
-                  SORTIR ET TOUT PERDRE
+                  ENREGISTRER ET SORTIR
+                </button>
+                <button 
+                  onClick={onBack}
+                  className="w-full text-red-500 font-black py-2 text-[10px] uppercase tracking-widest"
+                >
+                  Sortir sans enregistrer
                 </button>
               </div>
             </div>

@@ -107,6 +107,35 @@ export const Settings: React.FC<SettingsProps> = ({ onBack, onSave, onAddProject
              </button>
           </div>
 
+          {/* Section Apparence */}
+          <div className="bg-white p-6 rounded-[2rem] shadow-sm border-4 border-white flex flex-col gap-4">
+             <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shrink-0">
+                   <i className={`fas ${config?.theme === 'dark' ? 'fa-moon' : 'fa-sun'}`}></i>
+                </div>
+                <div className="flex-1 min-w-0">
+                   <h3 className="font-black text-gray-900 text-sm truncate">Apparence</h3>
+                   <p className="text-[10px] text-gray-400 font-bold uppercase truncate tracking-tight">
+                     Mode {config?.theme === 'dark' ? 'Sombre' : 'Clair'} actif
+                   </p>
+                </div>
+             </div>
+             <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => config && handleSaveConfig({ ...config, theme: 'light' })}
+                  className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${config?.theme !== 'dark' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                >
+                   Clair
+                </button>
+                <button 
+                  onClick={() => config && handleSaveConfig({ ...config, theme: 'dark' })}
+                  className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${config?.theme === 'dark' ? 'bg-slate-800 text-white shadow-lg shadow-slate-900/20' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                >
+                   Sombre
+                </button>
+             </div>
+          </div>
+
           {/* Bouton Ajouter un projet (QR) */}
           <button 
             onClick={onAddProject}

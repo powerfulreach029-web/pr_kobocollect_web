@@ -6,6 +6,7 @@ export interface ProjectConfig {
   password?: string;
   color?: string;
   icon?: string;
+  theme?: 'light' | 'dark';
 }
 
 export interface BlankForm {

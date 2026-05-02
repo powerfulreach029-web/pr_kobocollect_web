@@ -53,6 +53,14 @@ const App: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (config?.theme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [config]);
+
   const handleConfigDone = () => {
     const savedConfig = localStorage.getItem('kobo_config');
     if (savedConfig) setConfig(JSON.parse(savedConfig));
@@ -76,24 +84,31 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSaveInstance = (answers: any, status: 'draft' | 'finalized' = 'draft', labelMap: any = {}) => {
+  const handleSaveInstance = (answers: any, status: 'draft' | 'finalized' = 'draft', labelMap: any = {}, stay: boolean = false) => {
     if (!selectedForm) return;
     
     const instancesStr = localStorage.getItem('kobo_instances') || '[]';
     let instances: FormInstance[] = JSON.parse(instancesStr);
+    let updatedInstance: FormInstance | null = null;
     
     if (editingInstance) {
        // Update existing
-       instances = instances.map(ins => ins.id === editingInstance.id ? {
-          ...ins,
-          answers,
-          status,
-          labelMap,
-          timestamp: new Date().toISOString()
-       } : ins);
+       instances = instances.map(ins => {
+          if (ins.id === editingInstance.id) {
+             updatedInstance = {
+                ...ins,
+                answers,
+                status,
+                labelMap,
+                timestamp: new Date().toISOString()
+             };
+             return updatedInstance;
+          }
+          return ins;
+       });
     } else {
        // Create new
-       const newInstance: FormInstance = {
+       updatedInstance = {
          id: Date.now().toString(),
          formId: selectedForm.formId,
          formName: selectedForm.name,
@@ -102,15 +117,20 @@ const App: React.FC = () => {
          timestamp: new Date().toISOString(),
          status
        };
-       instances.push(newInstance);
+       instances.push(updatedInstance);
     }
     
     localStorage.setItem('kobo_instances', JSON.stringify(instances));
     
     showToast(status === 'finalized' ? 'Formulaire finalisé avec succès !' : 'Brouillon enregistré.');
-    setView('home');
-    setSelectedForm(null);
-    setEditingInstance(null);
+    
+    if (stay) {
+       setEditingInstance(updatedInstance);
+    } else {
+       setView('home');
+       setSelectedForm(null);
+       setEditingInstance(null);
+    }
   };
 
   const handleQRScan = (qrConfig: any) => {
@@ -273,14 +293,10 @@ const App: React.FC = () => {
           </div>
        </main>
 
-       <footer className="p-8 text-center space-y-2">
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">KoboCollect Web Port Premium</p>
-          <button 
-            onClick={() => { localStorage.clear(); window.location.reload(); }}
-            className="text-[10px] font-bold text-gray-200 hover:text-red-300 transition-colors"
-          >
-             Réinitialiser l'application
-          </button>
+       <footer className="p-8 text-center">
+          <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">
+             Created by <a href="https://powerfulreach.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">POWERFUL REACH</a>
+          </p>
        </footer>
 
        {toast && (
