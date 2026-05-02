@@ -1,4 +1,0 @@
-/kobo-proxy/*  https://kc.kobotoolbox.org/:splat  200!
-/kf-proxy/*    https://kf.kobotoolbox.org/:splat  200!
-/eu-proxy/*    https://eu.kobotoolbox.org/:splat  200!
-/*             /index.html                        200
