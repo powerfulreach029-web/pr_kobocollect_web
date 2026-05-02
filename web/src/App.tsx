@@ -202,7 +202,7 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between">
              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-primary/20">
-                   <img src="https://i.ibb.co/ksh85hps/Chat-GPT-Image-1-mai-2026-19-06-37.png" alt="KoboCollect" className="w-full h-full object-cover" />
+                   <img src="/app-logo.png" alt="KoboCollect" className="w-full h-full object-cover" />
                 </div>
                 <div>
                    <h1 className="text-xl font-black text-gray-900 tracking-tighter">KoboCollect</h1>
@@ -333,7 +333,7 @@ const FirstLaunch: React.FC<{ onScanQR: () => void; onManual: () => void; onDemo
         </button>
      )}
      <div className="mb-8 w-28 h-28 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/30">
-        <img src="https://i.ibb.co/ksh85hps/Chat-GPT-Image-1-mai-2026-19-06-37.png" alt="KoboCollect" className="w-full h-full object-cover" />
+        <img src="/app-logo.png" alt="KoboCollect" className="w-full h-full object-cover" />
      </div>
      <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase">KoboCollect</h1>
      <p className="text-gray-400 mb-12 font-bold text-xs uppercase tracking-[0.3em]">Web Port Edition</p>
